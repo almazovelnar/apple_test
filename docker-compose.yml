@@ -1,0 +1,61 @@
+version: '3.3'
+
+services:
+  nginx:
+    container_name: apple_nginx
+    build: ./docker/nginx
+    volumes:
+      - .:/app:delegated
+    ports:
+      - 80:80
+
+  php-fpm:
+    container_name: apple_php-fpm
+    build: ./docker/php-fpm
+    volumes:
+      - .:/app:delegated
+      - composer_cache:/home/appuser/.composer/cache:delegated
+    ports:
+      - 9002:9000
+
+  redis:
+    container_name: apple_redis
+    image: redis:latest
+    volumes:
+      - redis_data:/data
+    ports:
+      - 6377:6379
+
+  mysql:
+    container_name: apple_database
+    build: ./docker/mysql
+    volumes:
+      - mysql_data:/var/lib/mysql:delegated
+    command: --sql_mode=""
+    environment:
+      MYSQL_USER: devuser
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: apple
+      SERVICE_NAME: mysql
+      TZ: Asia/Baku
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 3309:3306
+
+  phpmyadmin:
+    container_name: apple_phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - 8022:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
+  composer_cache:
+  redis_data:
