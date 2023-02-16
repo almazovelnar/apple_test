@@ -13,6 +13,7 @@ use yii\db\ActiveRecord;
 class Apple extends ActiveRecord
 {
     const ROTTEN_PERIOD = 7;
+
     public static function tableName()
     {
         return 'apples';
@@ -27,7 +28,7 @@ class Apple extends ActiveRecord
 
     public function isRotten(): bool
     {
-        return (time() - strtotime($this->getFellAt())) / 86400 > self::ROTTEN_PERIOD;
+        return $this->getFellAt() && floor((time() - strtotime($this->getFellAt())) / 86400) > self::ROTTEN_PERIOD;
     }
 
     public function getFellAt(): ?string
@@ -38,6 +39,11 @@ class Apple extends ActiveRecord
     public function setFellAt($fell_at): void
     {
         $this->fell_at = $fell_at;
+    }
+
+    public function isDropped(): bool
+    {
+        return $this->status == Status::ON_GROUND;
     }
 
     public function isEated(): bool

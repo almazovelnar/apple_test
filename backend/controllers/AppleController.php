@@ -50,6 +50,8 @@ class AppleController extends Controller
                 $form->save();
                 return $this->redirect(['index']);
             } catch (RuntimeException $e) {
+                Yii::$app->session->setFlash('notification', $e->getMessage());
+                return $this->goBack();
             }
         }
 
@@ -64,8 +66,11 @@ class AppleController extends Controller
 
         try {
             $this->appleService->remove($apple);
+            Yii::$app->session->setFlash('notification', 'Apple deleted successfully');
             return $this->redirect(['index']);
         } catch (RuntimeException $e) {
+            Yii::$app->session->setFlash('notification', $e->getMessage());
+            return $this->redirect(['index']);
         }
     }
 
@@ -77,7 +82,7 @@ class AppleController extends Controller
             $this->appleService->eat($apple, $percent);
             return $this->redirect(['index']);
         } catch (RuntimeException $e) {
-            Yii::$app->session->setFlash('notification', 'This apple is on tree yet! Drop it for eat :)');
+            Yii::$app->session->setFlash('notification', $e->getMessage());
             return $this->redirect(['index']);
         }
     }
@@ -91,7 +96,7 @@ class AppleController extends Controller
             Yii::$app->session->setFlash('notification', 'Apple dropped successfully');
             return $this->redirect(['index']);
         } catch (RuntimeException $e) {
-            Yii::$app->session->setFlash('notification', 'Apple dropped at ' . $apple->fell_at);
+            Yii::$app->session->setFlash('notification', $e->getMessage());
             return $this->redirect(['index']);
         }
     }

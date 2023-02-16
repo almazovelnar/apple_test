@@ -1,5 +1,6 @@
 <?php
-    /** @var ActiveDataProvider $dataProvider */
+
+/** @var ActiveDataProvider $dataProvider */
 
 use common\enum\Status;
 use common\helpers\LabelHelper;
@@ -20,6 +21,7 @@ $this->registerJs("
         }
     });
 ");
+
 ?>
 
 <div class="card-header">
@@ -37,9 +39,16 @@ $this->registerJs("
             [
                 'label' => 'Status',
                 'value' => function ($data) {
+                    if ($data->isEated()) {
+                        $status = 'Is eaten';
+                    } else if ($data->isRotten()) {
+                        $status = 'Is rotten';
+                    } else {
+                        $status = Status::get($data->status);
+                    }
                     return LabelHelper::generate(
-                            !$data->isEated() ? Status::get($data->status) : 'Is eaten',
-                            Status::label($data->status)
+                        $status,
+                        Status::label($data->status)
                     );
                 },
                 'format' => 'raw',
@@ -55,7 +64,7 @@ $this->registerJs("
                 'template' => "{eat} {drop} {delete}",
                 'buttons' => [
                     'eat' => function ($url, $data) {
-                        if (!$data->isEated()) {
+                        if (!$data->isEated() && !$data->isRotten()) {
                             return Html::a("Eat", $url, [
                                 'class' => 'btn btn-success btn-eat'
                             ]);
