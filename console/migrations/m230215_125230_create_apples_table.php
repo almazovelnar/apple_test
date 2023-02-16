@@ -15,8 +15,8 @@ class m230215_125230_create_apples_table extends Migration
         $this->createTable('{{%apples}}', [
             'id' => $this->primaryKey(),
             'color' => $this->string(),
-            'status' => $this->tinyInteger(),
-            'eaten' => $this->smallInteger(),
+            'status' => $this->tinyInteger()->defaultValue(\common\enum\Status::ON_TREE),
+            'eaten' => $this->smallInteger()->defaultValue(0),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
             'fell_at' => $this->timestamp()->null(),
         ]);
